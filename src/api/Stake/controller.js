@@ -194,8 +194,8 @@ const stakeTimerOut = async (id_) => {
 
 function setDaysTimeout(callback, days, id_) {
     // 86400 seconds in a day
-    //    let msInDay = 86400*1000;
-    let msInDay = 260 * 1000;
+    let msInDay = 86400*1000;
+    // let msInDay = 260 * 1000;
 
     let dayCount = 0;
     let timer = setInterval(function () {
@@ -212,8 +212,8 @@ const initStakeTimer = async () => {
     await RewardInfo.deleteMany({});
     const _findStakedNftInfo = await StakedNfts.find({}).sort({ accountId: -1 });
     for (let i = 0; i < _findStakedNftInfo.length; i++) {
-        const _count = Math.floor((Date.now() - _findStakedNftInfo[i].createdAt) / 260000);
-        const _remainTime = (Date.now() - _findStakedNftInfo[i].createdAt) % 260000;
+        const _count = Math.floor((Date.now() - _findStakedNftInfo[i].createdAt) / 86400000);
+        const _remainTime = (Date.now() - _findStakedNftInfo[i].createdAt) % 86400000;
 
         await StakedNfts.findOneAndUpdate(
             { _id: _findStakedNftInfo[i]._id },
