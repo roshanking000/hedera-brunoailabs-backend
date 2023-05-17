@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon src/index.js",
-    "start-server": "npx cross-env NODE_ENV=production npx pm2 start ./src/index.js",
+    "start-server": "npx cross-env NODE_ENV=production npx pm2 start ./src/index.js --name brunoailabs-backend",
     "stop-server": "npx pm2 stop ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
