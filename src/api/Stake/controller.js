@@ -193,8 +193,8 @@ const stakeTimerOut = async (id_) => {
 
 function setDaysTimeout(callback, days, id_) {
     // 86400 seconds in a day
-    // let msInDay = 86400*1000;
-    let msInDay = 5 * 1000;
+    let msInDay = 86400*1000;
+    // let msInDay = 5 * 1000;
 
     let dayCount = 0;
     let timer = setInterval(function () {
