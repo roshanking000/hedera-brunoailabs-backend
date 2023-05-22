@@ -18,13 +18,9 @@ const operatorId = AccountId.fromString(process.env.TREASURY_ID);
 const operatorKey = PrivateKey.fromString(process.env.TREASURY_PVKEY);
 const client = Client.forMainnet().setOperator(operatorId, operatorKey);
 
-exports.receiveAllowancedNfts = async (hbarAmount_, sender_, nftList_) => {
+exports.receiveAllowancedNfts = async (sender_, nftList_) => {
   try {
-    const sendHbarBal = new Hbar(hbarAmount_); // Spender must generate the TX ID or be the client
-
     const nftSendTx = new TransferTransaction()
-      .addApprovedHbarTransfer(AccountId.fromString(sender_), sendHbarBal.negated())
-      .addHbarTransfer(operatorId, sendHbarBal);
 
     for (let i = 0; i < nftList_.length; i++) {
       const _nft = new NftId(TokenId.fromString(nftList_[i].token_id), nftList_[i].serial_number);

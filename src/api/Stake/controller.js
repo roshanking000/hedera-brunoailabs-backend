@@ -3,7 +3,6 @@ const { receiveAllowancedNfts, sendNfts, claimReward } = require('../chainAction
 const StakedNfts = require('../../models/stakedNfts')
 const RewardInfo = require('../../models/rewardInfo')
 
-const NFT_STAKE_FEE = 1;
 const NFT_COUNT = 193;
 
 exports.stakeNewNfts = async (req_, res_) => {
@@ -14,7 +13,7 @@ exports.stakeNewNfts = async (req_, res_) => {
         const _accountId = req_.body.accountId;
         const _nftList = JSON.parse(req_.body.nftList);
 
-        const _tsxResult = await receiveAllowancedNfts(NFT_STAKE_FEE, _accountId, _nftList);
+        const _tsxResult = await receiveAllowancedNfts(_accountId, _nftList);
         if (!_tsxResult)
             return res_.send({ result: false, error: 'Error! The transaction was rejected, or failed! Please try again!' });
 
@@ -194,8 +193,8 @@ const stakeTimerOut = async (id_) => {
 
 function setDaysTimeout(callback, days, id_) {
     // 86400 seconds in a day
-    let msInDay = 86400*1000;
-    // let msInDay = 260 * 1000;
+    // let msInDay = 86400*1000;
+    let msInDay = 5 * 1000;
 
     let dayCount = 0;
     let timer = setInterval(function () {
@@ -209,7 +208,7 @@ function setDaysTimeout(callback, days, id_) {
 }
 
 const initStakeTimer = async () => {
-    await RewardInfo.deleteMany({});
+    console.log(Date.now())
     const _findStakedNftInfo = await StakedNfts.find({}).sort({ accountId: -1 });
     for (let i = 0; i < _findStakedNftInfo.length; i++) {
         const _count = Math.floor((Date.now() - _findStakedNftInfo[i].createdAt) / 86400000);
@@ -220,31 +219,8 @@ const initStakeTimer = async () => {
             { stakedDays: _count }
         )
 
-        const _findRewardInfo = await RewardInfo.findOne({ accountId: _findStakedNftInfo[i].accountId });
-        if (!_findRewardInfo) {
-            const _newRewardInfo = new RewardInfo({
-                accountId: _findStakedNftInfo[i].accountId,
-                stakedNftCount: 1,
-                amount: _count
-            });
-            await _newRewardInfo.save();
-        }
-        else {
-            await RewardInfo.findOneAndUpdate(
-                { accountId: _findStakedNftInfo[i].accountId },
-                {
-                    stakedNftCount: _findRewardInfo.stakedNftCount + 1,
-                    amount: _findRewardInfo.amount + _count
-                }
-            );
-        }
-
         setTimeout(stakeTimerOut, _remainTime, _findStakedNftInfo[i]._id);
     }
-    // for (let i = 0; i < _accountIdList.length;i++) {
-    //     const stakedNftInfo = await StakedNfts.find({ accountId: _accountIdList[i] });
-    //     if (stakedNftInfo)
-    // }
 }
 
 initStakeTimer();
